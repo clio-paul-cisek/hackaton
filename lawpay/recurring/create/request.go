@@ -15,9 +15,3 @@ type RecurringCharge struct {
 	Method      string
 	Schedule    Schedule
 }
-
-// RecurringChargeGenerateRequest struct reflect generating request struct
-type RecurringChargeGenerateRequest struct {
-	Result          string // SUCCESS FAILURE
-	RecurringCharge `json:"recurring_charge"`
-}
