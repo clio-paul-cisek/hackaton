@@ -24,14 +24,41 @@ func New(repository repository.Connector) *LawPay {
 
 // Get function allows us to fetch response with given id
 func (lp LawPay) Get(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-
-	data, err := lp.Repository.Fetch(ps.ByName("uuid"))
+	uid := ps.ByName("uuid")
+	data, err := lp.Repository.Fetch(uid)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	w.Write(data)
+
+	if len(data) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	idKeyMap := map[string]string{}
+
+	err = json.Unmarshal(data, &idKeyMap)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
+	}
+
+	var responseData []byte
+
+	if key, ok := idKeyMap[uid]; ok {
+		responseData, err = lp.Repository.Fetch(key)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		w.Write(responseData)
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+	}
 }
 
 // Create function allows us to create new stubbed responses
@@ -46,7 +73,17 @@ func (lp LawPay) Create(w http.ResponseWriter, r *http.Request, _ httprouter.Par
 		return
 	}
 
-	data, err := lp.Repository.Fetch(rcRequest.AccountID)
+	kg := create.NewKeyGenerator(
+		rcRequest.AccountID,
+		rcRequest.Description,
+		rcRequest.Schedule.Start,
+		rcRequest.Schedule.IntervalUnit,
+		rcRequest.Schedule.IntervalDelay,
+	)
+
+	key := kg.GenerateKey()
+
+	data, err := lp.Repository.Fetch(key)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
@@ -60,23 +97,51 @@ func (lp LawPay) Create(w http.ResponseWriter, r *http.Request, _ httprouter.Par
 
 // RecordCreate function handles raw response recording
 func (lp LawPay) RecordCreate(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	rcrRequest := &create.SuccessResponse{}
+	rcrResponse := &create.SuccessResponse{}
 	requestDecoder := json.NewDecoder(r.Body)
-	err := requestDecoder.Decode(rcrRequest)
+	err := requestDecoder.Decode(rcrResponse)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return
 	}
 
-	data, err := json.Marshal(rcrRequest)
+	data, err := json.Marshal(rcrResponse)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return
 	}
 
-	err = lp.Repository.Put(rcrRequest.AccountID, data)
+	kg := create.NewKeyGenerator(
+		rcrResponse.AccountID,
+		rcrResponse.Description,
+		rcrResponse.Schedule.Start,
+		rcrResponse.Schedule.IntervalUnit,
+		rcrResponse.Schedule.IntervalDelay,
+	)
+
+	key := kg.GenerateKey()
+
+	err = lp.Repository.Put(key, data)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
+	}
+
+	idKeyMap := map[string]string{
+		rcrResponse.ID: key,
+	}
+
+	keyData, err := json.Marshal(idKeyMap)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
+	}
+
+	err = lp.Repository.Put(rcrResponse.ID, keyData)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
