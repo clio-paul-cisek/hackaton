@@ -15,11 +15,8 @@ NOTE: Currently only `LawPay - recurring charge` endpoint is implemented.
 
 ### Recording Response
 
-#### 1.create
+#### 1.CREATE
 In order to record response one needs to `POST localhost:8080/record/create` with correct `response` data which can be found [here](https://developers.affinipay.com/reference/api.html#RecurringCharges)
-
-## !IMPORTANT! data for create is stored and fetched from DB on `account_id` field!
-
 
 Example data:
 ```json
@@ -75,3 +72,7 @@ When response is recorded you can start using this service as a mock. By hitting
 ```
 
 and you receive previously predefined response.
+
+#### 2.GET
+
+In order to mimics `GET recurrnig charge` one needs to hit `GET localhost:8080/lawpay/<ID>`, Where `<ID>` is field which we get as a response for `POST create` action. 
