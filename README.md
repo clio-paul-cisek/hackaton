@@ -75,4 +75,4 @@ and you receive previously predefined response.
 
 #### 2.GET
 
-In order to mimics `GET recurrnig charge` one needs to hit `GET localhost:8080/lawpay/<ID>`, Where `<ID>` is field which we get as a response for `POST create` action. 
+In order to mimics `GET recurrnig charge` one needs to hit `GET localhost:8080/lawpay/<ID>`, Where `<ID>` is one of fields which we get as a response for `POST create` action. 
