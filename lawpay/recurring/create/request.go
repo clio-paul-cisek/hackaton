@@ -6,6 +6,7 @@ type schedule struct {
 	IntervalDelay int    `json:"interval_delay"`
 }
 
+// RecurringCharge struct reflects request struct
 type RecurringCharge struct {
 	Description string
 	AccountID   string `json:"account_id"`
@@ -14,6 +15,7 @@ type RecurringCharge struct {
 	Schedule    schedule
 }
 
+// RecurringChargeGenerateRequest struct reflect generating request struct
 type RecurringChargeGenerateRequest struct {
 	Result          string // SUCCESS FAILURE
 	RecurringCharge `json:"recurring_charge"`
