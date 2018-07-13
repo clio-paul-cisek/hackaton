@@ -87,35 +87,3 @@ func (lp LawPay) RecordCreate(w http.ResponseWriter, r *http.Request, _ httprout
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
-
-// CreateResponse function allows us to create stubbed response
-func (lp LawPay) CreateResponse(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-
-	rcRequest := &create.RecurringChargeGenerateRequest{}
-	requestDecoder := json.NewDecoder(r.Body)
-	err := requestDecoder.Decode(rcRequest)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
-		return
-	}
-
-	mapper := create.NewMapper(rcRequest)
-	data, err := mapper.MapRequest()
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
-		return
-	}
-
-	err = lp.Repository.Put(rcRequest.AccountID, data)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
-		return
-	}
-
-	w.Header().Set("content-type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
-}

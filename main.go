@@ -27,7 +27,6 @@ func main() {
 	lawPayCtrl := rcapi.New(repository)
 	router.GET("/lawpay/:uuid", lawPayCtrl.Get)
 	router.POST("/lawpay", lawPayCtrl.Create)
-	router.POST("/lawpayCreateResponse", lawPayCtrl.CreateResponse)
 	router.POST("/record/create", lawPayCtrl.RecordCreate)
 	log.Fatal(http.ListenAndServe(os.Getenv("PORT"), router))
 }
