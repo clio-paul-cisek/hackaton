@@ -30,6 +30,9 @@ func (r Redis) Close() {
 // Fetch function fetches data from db
 func (r Redis) Fetch(uuid string) ([]byte, error) {
 	n, err := r.conn.Do("JSON.GET", uuid)
+	if n == nil {
+		n = []byte{}
+	}
 	return n.([]byte), err
 }
 
