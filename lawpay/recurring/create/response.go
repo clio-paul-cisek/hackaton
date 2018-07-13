@@ -26,11 +26,11 @@ type Occurrence struct {
 
 // SuccessResponse reflects response on success
 type SuccessResponse struct {
-	ID        string
-	Status    string
-	AccountID string `json:"account_id"`
-	Method
-	Schedule
+	ID               string
+	Status           string
+	AccountID        string `json:"account_id"`
+	Method           Method
+	Schedule         Schedule
 	Description      string
 	Amount           int
 	Currency         string

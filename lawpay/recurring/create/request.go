@@ -13,7 +13,7 @@ type RecurringCharge struct {
 	AccountID   string `json:"account_id"`
 	Amount      string
 	Method      string
-	Schedule
+	Schedule    Schedule
 }
 
 // RecurringChargeGenerateRequest struct reflect generating request struct
