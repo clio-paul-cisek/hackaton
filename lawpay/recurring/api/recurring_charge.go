@@ -58,6 +58,36 @@ func (lp LawPay) Create(w http.ResponseWriter, r *http.Request, _ httprouter.Par
 	w.Write(data)
 }
 
+// RecordCreate function handles raw response recording
+func (lp LawPay) RecordCreate(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	rcrRequest := &create.SuccessResponse{}
+	requestDecoder := json.NewDecoder(r.Body)
+	err := requestDecoder.Decode(rcrRequest)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
+	}
+
+	data, err := json.Marshal(rcrRequest)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
+	}
+
+	err = lp.Repository.Put(rcrRequest.AccountID, data)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
+	}
+
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 // CreateResponse function allows us to create stubbed response
 func (lp LawPay) CreateResponse(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 

@@ -1,6 +1,7 @@
 package create
 
-type schedule struct {
+// Schedule struct is responsible for mimicking lawpay schedule struct
+type Schedule struct {
 	Start         string
 	IntervalUnit  string `json:"interval_unit"`
 	IntervalDelay int    `json:"interval_delay"`
@@ -12,7 +13,7 @@ type RecurringCharge struct {
 	AccountID   string `json:"account_id"`
 	Amount      string
 	Method      string
-	Schedule    schedule
+	Schedule
 }
 
 // RecurringChargeGenerateRequest struct reflect generating request struct
